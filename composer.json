@@ -1,4 +1,13 @@
 {
+    "name":"kzykhys/doctrine-orm-service-provider",
+    "description":"Provides Doctrine ORM to Silex application",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kazuyuki Hayashi",
+            "email": "hayashi@valnur.net"
+        }
+    ],
     "require": {
         "silex/silex": "1.0.*@dev",
         "doctrine/orm": ">=2.2.0,<2.4.0-dev"
