@@ -4,11 +4,19 @@ namespace KzykHys\Silex\Provider\DoctrineORM;
 
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand;
+use Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
+use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\ORM\Tools\SchemaTool;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
+use Symfony\Component\Console\Application as Console;
 
 /**
  * Provides Doctrine ORM to Silex
@@ -94,6 +102,34 @@ class DoctrineORMServiceProvider implements ServiceProviderInterface
         $app['orm.schema_tool'] = $app->share(function (Application $app) {
             return new SchemaTool($app['orm.em']);
         });
+
+        /*
+         * Register console commands for doctrine if `kzykhys/console-service-provider` is registered
+         */
+        if (isset($app['console.commands'])) {
+            $app['console'] = $app->share($app->extend('console', function (Console $console, Application $app) {
+                $console->getHelperSet()->set(new ConnectionHelper($app['db']), 'db');
+                $console->getHelperSet()->set(new EntityManagerHelper($app['orm.em']), 'em');
+
+                return $console;
+            }));
+
+            $app['console.commands'] = $app->share($app->extend('console.commands', function (array $commands) {
+                $create         = new CreateCommand();
+                $update         = new UpdateCommand();
+                $drop           = new DropCommand();
+                $generateEntity = new GenerateEntitiesCommand();
+                $generateProxy  = new GenerateProxiesCommand();
+
+                $commands[] = $create->setName('doctrine:schema:create');
+                $commands[] = $update->setName('doctrine:schema:update');
+                $commands[] = $drop->setName('doctrine:schema:drop');
+                $commands[] = $generateEntity->setName('doctrine:generate:entities');
+                $commands[] = $generateProxy->setName('doctrine:generate:proxies');
+
+                return $commands;
+            }));
+        }
     }
 
     /**

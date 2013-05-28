@@ -16,5 +16,12 @@
     "require": {
         "silex/silex": "1.0.*@dev",
         "doctrine/orm": ">=2.2.0,<2.4.0-dev"
-    }
+    },
+    "require-dev": {
+        "kzykhys/console-service-provider": "dev-master"
+    },
+    "suggest": {
+        "kzykhys/console-service-provider": "Allows doctrine commands on silex application"
+    },
+    "minimum-stability": "dev"
 }
