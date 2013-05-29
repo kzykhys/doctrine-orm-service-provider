@@ -26,7 +26,7 @@ Services
 --------
 
 * **orm.em**: Entity Manager for Doctrine, instance of `Doctrine\ORM\EntityManager`.
-* **'orm.schema_tool**: instance of `Doctrine\ORM\Tools\SchemaTool`.
+* **orm.schema_tool**: instance of `Doctrine\ORM\Tools\SchemaTool`.
 
 Usage
 -----
@@ -35,9 +35,13 @@ Usage
 <?php
 
 use Silex\Application;
+use Silex\Provider\DoctrineServiceProvider;
 use KzykHys\Silex\Provider\DoctrineORM\DoctrineORMServiceProvider;
 
 $app = new Silex\Application();
+$app->register(new DoctrineServiceProvider(), array(
+    'db.options' => '...'
+));
 $app->register(new DoctrineORMServiceProvider(), array(
     'orm.cache.dir'       => __DIR__ . '/app/cache/doctrine/orm',
     'orm.entity.path'     => array(__DIR__ . '/path/to/entity_dir'),
